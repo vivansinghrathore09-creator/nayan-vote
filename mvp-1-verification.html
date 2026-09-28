@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nayan Vote • MVP 1: Verification & Fraud Prevention Engine</title>
+  <meta name="description" content="MVP 1: Biometric iris scanning, micro-pupillary liveness anti-spoofing, Aadhaar sync, and one-time EVM pass generator for institutional and government polling.">
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --bg-primary: #070c18;
+      --bg-secondary: #0b132b;
+      --bg-card: #0f172a;
+      --bg-card-hover: #1e293b;
+      --border-color: #334155;
+      --cyan: #00f2fe;
+      --blue: #2563eb;
+      --green: #10b981;
+      --red: #ef4444;
+      --saffron: #f59e0b;
+      --purple: #a855f7;
+      --text-white: #ffffff;
+      --text-light: #e2e8f0;
+      --text-muted: #94a3b8;
+      --font-display: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-light);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Top Universal Hub Navigation */
+    .hub-header {
+      background: rgba(11, 19, 43, 0.95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #fff;
+    }
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      color: #040914;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+    }
+    .brand-text h1 {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+    .brand-text span {
+      font-size: 0.72rem;
+      color: var(--cyan);
+      font-family: var(--font-mono);
+      display: block;
+    }
+
+    .mvp-nav-links {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .mvp-nav-btn {
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-family: var(--font-display);
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--text-muted);
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .mvp-nav-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .mvp-nav-btn.active {
+      background: rgba(0, 242, 254, 0.12);
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+    .mvp-nav-btn.btn-kiosk {
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      color: #040914;
+      font-weight: 700;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 30px 24px 60px 24px;
+    }
+
+    /* Hero Banner */
+    .hero-strip {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(11, 19, 43, 0.9));
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px 30px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 242, 254, 0.1);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      color: var(--cyan);
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      padding: 4px 10px;
+      border-radius: 9999px;
+      margin-bottom: 8px;
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .hero-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      max-width: 820px;
+    }
+    .hero-stats {
+      display: flex;
+      gap: 20px;
+      flex-shrink: 0;
+    }
+    .stat-pill {
+      background: rgba(7, 12, 24, 0.8);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px 18px;
+      text-align: center;
+    }
+    .stat-val {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--green);
+    }
+    .stat-lbl {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Main Grid */
+    .engine-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 24px;
+      margin-bottom: 30px;
+    }
+
+    /* Left Card: Camera & Reticle HUD */
+    .scanner-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .status-tag {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid;
+    }
+    .status-standby { background: rgba(148, 163, 184, 0.1); border-color: #64748b; color: #94a3b8; }
+    .status-scanning { background: rgba(0, 242, 254, 0.15); border-color: var(--cyan); color: var(--cyan); }
+    .status-pass { background: rgba(16, 185, 129, 0.15); border-color: var(--green); color: var(--green); }
+    .status-fail { background: rgba(239, 68, 68, 0.15); border-color: var(--red); color: var(--red); }
+
+    /* Video & Canvas Viewport */
+    .viewport-box {
+      position: relative;
+      width: 100%;
+      height: 380px;
+      background: #040914;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      box-shadow: 0 0 25px rgba(0, 242, 254, 0.15);
+    }
+    video, canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .synthetic-eye-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 180px;
+      height: 180px;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* Reticle UI elements */
+    .hud-metrics-overlay {
+      position: absolute;
+      bottom: 12px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      background: rgba(7, 12, 24, 0.75);
+      backdrop-filter: blur(8px);
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 20;
+    }
+
+    /* Control Buttons */
+    .controls-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      color: #040914;
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 25px rgba(0, 242, 254, 0.5);
+    }
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #f87171;
+    }
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+    .btn-secondary {
+      background: rgba(30, 41, 59, 0.8);
+      border-color: var(--border-color);
+      color: var(--text-light);
+    }
+    .btn-secondary:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--cyan);
+    }
+
+    /* Liveness Detection Bar */
+    .liveness-panel {
+      background: rgba(11, 19, 43, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 14px 18px;
+    }
+    .liveness-head {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      margin-bottom: 6px;
+      font-family: var(--font-mono);
+    }
+    .progress-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--cyan), var(--green));
+      border-radius: 9999px;
+      transition: width 0.4s ease;
+    }
+
+    /* Right Card: Aadhaar Mock Sync & One-Time Pass */
+    .result-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Mock Voter Selector */
+    .voter-selector-box {
+      background: rgba(11, 19, 43, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .selector-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      display: block;
+    }
+    .styled-select {
+      width: 100%;
+      background: #070c18;
+      border: 1px solid var(--border-color);
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      outline: none;
+    }
+    .styled-select:focus {
+      border-color: var(--cyan);
+    }
+
+    /* Verification Result Banner */
+    .match-result-banner {
+      background: rgba(11, 19, 43, 0.8);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    .match-icon-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid var(--border-color);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin: 0 auto 12px auto;
+    }
+    .match-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .match-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Pass Details Grid */
+    .pass-details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .pass-item {
+      background: rgba(7, 12, 24, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+    .pass-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+    }
+    .pass-val {
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    /* QR Code Pass Box */
+    .qr-pass-box {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 18px;
+      color: #040914;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+    .qr-canvas-holder {
+      width: 90px;
+      height: 90px;
+      background: #000;
+      border-radius: 6px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .qr-canvas-holder canvas {
+      position: relative;
+      width: 90px;
+      height: 90px;
+    }
+    .qr-info-right h4 {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #040914;
+      margin-bottom: 2px;
+    }
+    .qr-info-right p {
+      font-size: 0.78rem;
+      color: #475569;
+      line-height: 1.35;
+      margin-bottom: 6px;
+    }
+    .qr-code-token {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #0f172a;
+      display: inline-block;
+    }
+
+    /* Pilot Specifications & B2B Architecture */
+    .pilot-specs-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      margin-top: 30px;
+    }
+    .pilot-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-top: 18px;
+    }
+    .pilot-box {
+      background: rgba(11, 19, 43, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .pilot-box h4 {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      color: #fff;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pilot-box p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    @media (max-width: 1024px) {
+      .engine-grid { grid-template-columns: 1fr; }
+      .hero-strip { flex-direction: column; align-items: flex-start; }
+      .pilot-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      .pilot-grid { grid-template-columns: 1fr; }
+      .hub-header { flex-direction: column; gap: 12px; }
+      .mvp-nav-links { flex-wrap: wrap; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Universal Hub Header -->
+  <header class="hub-header">
+    <a href="index.html" class="brand-group">
+      <div class="brand-icon">
+        <i class="fa-solid fa-eye"></i>
+      </div>
+      <div class="brand-text">
+        <h1>NAYAN VOTE • MVP 1</h1>
+        <span>Verification & Fraud Engine (B2B / Govt Pilot)</span>
+      </div>
+    </a>
+
+    <nav class="mvp-nav-links">
+      <a href="mvp-1-verification.html" class="mvp-nav-btn active">
+        <i class="fa-solid fa-shield-halved"></i> MVP 1: Verification
+      </a>
+      <a href="mvp-2-voice-kiosk.html" class="mvp-nav-btn">
+        <i class="fa-solid fa-microphone"></i> MVP 2: Voice Assist
+      </a>
+      <a href="mvp-3-audit-vvpat.html" class="mvp-nav-btn">
+        <i class="fa-solid fa-receipt"></i> MVP 3: Audit & VVPAT
+      </a>
+      <a href="case-study-nayan-vote.html" class="mvp-nav-btn">
+        <i class="fa-solid fa-book-open"></i> Case Study
+      </a>
+      <a href="index.html" class="mvp-nav-btn btn-kiosk">
+        <i class="fa-solid fa-play"></i> Full Kiosk
+      </a>
+    </nav>
+  </header>
+
+  <div class="container">
+
+    <!-- Hero Strip -->
+    <div class="hero-strip">
+      <div>
+        <div class="hero-badge">
+          <i class="fa-solid fa-microchip"></i>
+          <span>STANDALONE B2B / GOVERNMENT ADD-ON PILOT ENGINE</span>
+        </div>
+        <h2 class="hero-title">High-Accuracy Iris Matching & Anti-Spoofing Hub</h2>
+        <p class="hero-desc">
+          Rather than replacing complete voting setups, MVP 1 operates as a rapid identity authentication layer. It verifies citizen biometrics against encrypted templates in under 3 seconds and issues signed EVM unlock tokens.
+        </p>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-pill">
+          <div class="stat-val">&lt; 0.001%</div>
+          <div class="stat-lbl">False Accept (FAR)</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-val">1.6 sec</div>
+          <div class="stat-lbl">Avg Match Time</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Engine Grid -->
+    <div class="engine-grid">
+
+      <!-- Left Column: Camera Viewport & Liveness Check -->
+      <div class="scanner-card">
+        <div class="card-head">
+          <div class="card-title">
+            <i class="fa-solid fa-camera" style="color: var(--cyan);"></i>
+            <span>NIR Camera & Eye-Tracking Viewport</span>
+          </div>
+          <span class="status-tag status-standby" id="scannerStatusBadge">STANDBY: READY</span>
+        </div>
+
+        <!-- Video & Canvas Viewport -->
+        <div class="viewport-box">
+          <video id="webcamVideo" autoplay playsinline muted></video>
+          <canvas id="hudCanvas"></canvas>
+
+          <div class="hud-metrics-overlay">
+            <span>FPS: <strong id="hudFps">30</strong></span>
+            <span>IRIS COORD: <strong id="hudCoords">X: 320, Y: 240</strong></span>
+            <span>LIVENESS: <strong id="hudLivenessText">98.4% (HUMAN)</strong></span>
+          </div>
+        </div>
+
+        <!-- Liveness Monitor -->
+        <div class="liveness-panel">
+          <div class="liveness-head">
+            <span><i class="fa-solid fa-heart-pulse" style="color: var(--cyan); margin-right: 6px;"></i> Micro-Pupillary Liveness Detection</span>
+            <span id="livenessScore">98.4% Confidence</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="livenessBar" style="width: 98%;"></div>
+          </div>
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">
+            Analyzes micro-dilation reactions to infrared illumination, instantly defeating printed photo attacks and screen replays.
+          </p>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls-row">
+          <button class="btn btn-primary" id="btnScanNow" onclick="executeIrisScan(false)">
+            <i class="fa-solid fa-fingerprint"></i> Scan & Verify Iris
+          </button>
+          <button class="btn btn-danger" id="btnSimulateSpoof" onclick="executeIrisScan(true)">
+            <i class="fa-solid fa-triangle-exclamation"></i> Simulate Spoof Attack (Fake Photo)
+          </button>
+          <button class="btn btn-secondary" onclick="toggleCameraStream()">
+            <i class="fa-solid fa-video"></i> <span id="cameraBtnLabel">Enable Live WebCam</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Column: National ID Lookup & EVM Unlock Pass -->
+      <div class="result-card">
+        <div class="card-head">
+          <div class="card-title">
+            <i class="fa-solid fa-database" style="color: var(--cyan);"></i>
+            <span>Aadhaar / Voter ID Mock Lookup</span>
+          </div>
+          <span style="font-size: 0.78rem; color: var(--green); font-family: var(--font-mono);"><i class="fa-solid fa-lock"></i> AES-256 Encrypted</span>
+        </div>
+
+        <!-- Voter Selector -->
+        <div class="voter-selector-box">
+          <label class="selector-label" for="voterSelector">Select Registered Citizen Profile:</label>
+          <select id="voterSelector" class="styled-select" onchange="updateSelectedVoter()">
+            <option value="vivan">Vivan (Enrolled Voter • Verified Pass)</option>
+            <option value="kiran">Kiran Devi (Rural Farmer • Bihar)</option>
+            <option value="aditya">Aditya Sharma (Tech Native • Bengaluru)</option>
+            <option value="rafeeq">Mohammed Rafeeq (Educator • Hyderabad)</option>
+            <option value="unknown">Unregistered Unknown Citizen (Mismatch Test)</option>
+          </select>
+        </div>
+
+        <!-- Result Status Banner -->
+        <div class="match-result-banner" id="matchBanner">
+          <div class="match-icon-circle" id="matchIcon">
+            <i class="fa-solid fa-qrcode"></i>
+          </div>
+          <div class="match-title" id="matchTitle">Awaiting Biometric Scan</div>
+          <div class="match-desc" id="matchDesc">Align eyes inside reticle and press "Scan & Verify Iris".</div>
+        </div>
+
+        <!-- Pass Details Data Grid -->
+        <div class="pass-details-grid">
+          <div class="pass-item">
+            <div class="pass-label">Citizen Name</div>
+            <div class="pass-val" id="dispVoterName">VIVAN</div>
+          </div>
+          <div class="pass-item">
+            <div class="pass-label">National EPIC / UID</div>
+            <div class="pass-val" id="dispVoterId">IND-2026-VIVAN-8849</div>
+          </div>
+          <div class="pass-item">
+            <div class="pass-label">Polling Station</div>
+            <div class="pass-val">Booth #04 (Central)</div>
+          </div>
+          <div class="pass-item">
+            <div class="pass-label">Hamming Distance</div>
+            <div class="pass-val" id="dispHamming">0.14 (Match Threshold &lt; 0.32)</div>
+          </div>
+        </div>
+
+        <!-- Digital One-Time Pass (QR Pass) -->
+        <div class="qr-pass-box" id="qrPassBox">
+          <div class="qr-canvas-holder">
+            <canvas id="qrCanvas" width="90" height="90"></canvas>
+          </div>
+          <div class="qr-info-right">
+            <h4>ONE-TIME EVM UNLOCK PASS</h4>
+            <p>Signed cryptographic session pass valid for 180 seconds at designated ballot booth.</p>
+            <span class="qr-code-token" id="qrTokenText">TOKEN: PASS-8849-0x9e7a2b</span>
+          </div>
+        </div>
+
+        <button class="btn btn-secondary" style="width: 100%; justify-content: center;" onclick="downloadTokenPass()">
+          <i class="fa-solid fa-download"></i> Save / Export Digital EVM Pass
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Pilot Architecture Cards -->
+    <div class="pilot-specs-card">
+      <h3 style="font-family: var(--font-display); font-size: 1.3rem; color: #fff;">
+        <i class="fa-solid fa-server" style="color: var(--cyan); margin-right: 8px;"></i>
+        Pilot Deployment Architecture for Institutional & Civic Elections
+      </h3>
+      <div class="pilot-grid">
+        <div class="pilot-box">
+          <h4><i class="fa-solid fa-building-columns" style="color: var(--cyan);"></i> Government Booths</h4>
+          <p>Operates as a pre-booth authentication kiosk, wiping queues and issuing physical printed barcodes for legacy EVMs.</p>
+        </div>
+        <div class="pilot-box">
+          <h4><i class="fa-solid fa-graduation-cap" style="color: var(--green);"></i> Universities & Unions</h4>
+          <p>Student senate and trade union elections with zero proxy voting and instant biometric check-in using student IDs.</p>
+        </div>
+        <div class="pilot-box">
+          <h4><i class="fa-solid fa-shield-virus" style="color: var(--saffron);"></i> Liveness Defense</h4>
+          <p>Micro-pupillary response prevents silicon mask and 4K printed photo spoofing with sub-millimeter precision.</p>
+        </div>
+        <div class="pilot-box">
+          <h4><i class="fa-solid fa-key" style="color: var(--purple);"></i> Ephemeral Tokens</h4>
+          <p>Biometric templates are destroyed immediately after verification. Only the anonymous one-time token pass persists.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Mock Voter Database
+    const VOTER_DB = {
+      vivan: { name: "VIVAN", id: "IND-2026-VIVAN-8849", status: "VALID", hamming: "0.12 (Pass)", score: "99.4%" },
+      kiran: { name: "KIRAN DEVI", id: "IND-2026-KIRAN-4102", status: "VALID", hamming: "0.18 (Pass)", score: "98.2%" },
+      aditya: { name: "ADITYA SHARMA", id: "IND-2026-ADITYA-7731", status: "VALID", hamming: "0.14 (Pass)", score: "99.1%" },
+      rafeeq: { name: "MOHAMMED RAFEEQ", id: "IND-2026-RAFEEQ-9012", status: "VALID", hamming: "0.15 (Pass)", score: "98.8%" },
+      unknown: { name: "UNKNOWN PERSON", id: "UNREGISTERED", status: "MISMATCH", hamming: "0.58 (Fail)", score: "42.1%" }
+    };
+
+    let isCameraActive = false;
+    let cameraStream = null;
+    let animFrame = null;
+    let scanAngle = 0;
+
+    function updateSelectedVoter() {
+      const key = document.getElementById('voterSelector').value;
+      const data = VOTER_DB[key];
+      document.getElementById('dispVoterName').textContent = data.name;
+      document.getElementById('dispVoterId').textContent = data.id;
+      document.getElementById('dispHamming').textContent = data.hamming;
+    }
+
+    // Toggle live webcam vs synthetic radar HUD
+    async function toggleCameraStream() {
+      const video = document.getElementById('webcamVideo');
+      const label = document.getElementById('cameraBtnLabel');
+
+      if (!isCameraActive) {
+        try {
+          cameraStream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
+          video.srcObject = cameraStream;
+          isCameraActive = true;
+          label.textContent = "Switch to Synthetic HUD";
+        } catch (err) {
+          alert("WebCam not accessible or denied. Running high-precision Synthetic NIR simulation mode.");
+          isCameraActive = false;
+        }
+      } else {
+        if (cameraStream) {
+          cameraStream.getTracks().forEach(t => t.stop());
+        }
+        video.srcObject = null;
+        isCameraActive = false;
+        label.textContent = "Enable Live WebCam";
+      }
+    }
+
+    // Canvas Animated HUD Rendering
+    function drawHUD() {
+      const canvas = document.getElementById('hudCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+
+      const w = canvas.width;
+      const h = canvas.height;
+      const cx = w / 2;
+      const cy = h / 2;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Background synthetic grid if webcam inactive
+      if (!isCameraActive) {
+        ctx.strokeStyle = "rgba(0, 242, 254, 0.08)";
+        ctx.lineWidth = 1;
+        for (let x = 0; x < w; x += 40) {
+          ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+        }
+        for (let y = 0; y < h; y += 40) {
+          ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+        }
+
+        // Draw animated synthetic iris pupil in center
+        ctx.save();
+        ctx.translate(cx, cy);
+        
+        // Outer iris ring
+        ctx.strokeStyle = "rgba(0, 242, 254, 0.6)";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(0, 0, 70, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Inner pupil with micro-dilation
+        const pupilPulse = 28 + Math.sin(Date.now() / 300) * 2;
+        ctx.fillStyle = "#040914";
+        ctx.beginPath();
+        ctx.arc(0, 0, pupilPulse, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(16, 185, 129, 0.8)";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Radiating crypt strands
+        for (let i = 0; i < 24; i++) {
+          const rad = (i * Math.PI) / 12;
+          ctx.strokeStyle = "rgba(0, 242, 254, 0.35)";
+          ctx.beginPath();
+          ctx.moveTo(Math.cos(rad) * pupilPulse, Math.sin(rad) * pupilPulse);
+          ctx.lineTo(Math.cos(rad) * 68, Math.sin(rad) * 68);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      // Concentric Scanning Reticle
+      scanAngle += 0.04;
+      ctx.save();
+      ctx.translate(cx, cy);
+
+      // Rotating dashed guide
+      ctx.strokeStyle = "rgba(0, 242, 254, 0.7)";
+      ctx.lineWidth = 2;
+      ctx.setLineDash([12, 10]);
+      ctx.beginPath();
+      ctx.arc(0, 0, 95, scanAngle, scanAngle + Math.PI * 1.6);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Corner target brackets
+      const r = 115;
+      ctx.strokeStyle = "rgba(0, 242, 254, 0.9)";
+      ctx.lineWidth = 3;
+      // Top Left
+      ctx.beginPath(); ctx.moveTo(-r, -r + 25); ctx.lineTo(-r, -r); ctx.lineTo(-r + 25, -r); ctx.stroke();
+      // Top Right
+      ctx.beginPath(); ctx.moveTo(r - 25, -r); ctx.lineTo(r, -r); ctx.lineTo(r, -r + 25); ctx.stroke();
+      // Bottom Left
+      ctx.beginPath(); ctx.moveTo(-r, r - 25); ctx.lineTo(-r, r); ctx.lineTo(-r + 25, r); ctx.stroke();
+      // Bottom Right
+      ctx.beginPath(); ctx.moveTo(r - 25, r); ctx.lineTo(r, r); ctx.lineTo(r, r - 25); ctx.stroke();
+
+      ctx.restore();
+
+      animFrame = requestAnimationFrame(drawHUD);
+    }
+
+    // Execute Iris Scan (Real or Spoof Test)
+    function executeIrisScan(isSpoof = false) {
+      const badge = document.getElementById('scannerStatusBadge');
+      const banner = document.getElementById('matchBanner');
+      const icon = document.getElementById('matchIcon');
+      const title = document.getElementById('matchTitle');
+      const desc = document.getElementById('matchDesc');
+      const livenessScore = document.getElementById('livenessScore');
+      const livenessBar = document.getElementById('livenessBar');
+      const livenessHud = document.getElementById('hudLivenessText');
+
+      badge.className = "status-tag status-scanning";
+      badge.textContent = "ANALYZING IRIS & LIVENESS...";
+      title.textContent = "Scanning Near-Infrared Spectrum...";
+      desc.textContent = "Extracting Gabor wavelet feature vectors & tracking pupillary micro-dilation.";
+
+      setTimeout(() => {
+        const voterKey = document.getElementById('voterSelector').value;
+        const voter = VOTER_DB[voterKey];
+
+        if (isSpoof) {
+          // SPOOF ATTACK DETECTED
+          badge.className = "status-tag status-fail";
+          badge.textContent = "FRAUD DETECTED: SPOOF ATTACK";
+          banner.style.borderColor = "var(--red)";
+          banner.style.background = "rgba(239, 68, 68, 0.1)";
+          icon.style.borderColor = "var(--red)";
+          icon.style.color = "var(--red)";
+          icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+          title.textContent = "ANTI-SPOOFING ALERT: LIVENESS FAILED";
+          title.style.color = "#f87171";
+          desc.textContent = "Micro-pupillary response is zero (static image / screen replay detected). Incident logged.";
+          livenessScore.textContent = "12.3% (Static Image Detected)";
+          livenessScore.style.color = "var(--red)";
+          livenessBar.style.width = "12%";
+          livenessBar.style.background = "var(--red)";
+          livenessHud.textContent = "12.3% (SPOOF ATTACK)";
+          drawQRCode(false);
+          return;
+        }
+
+        if (voterKey === "unknown") {
+          // UNKNOWN UNREGISTERED CITIZEN
+          badge.className = "status-tag status-fail";
+          badge.textContent = "MISMATCH: UNREGISTERED";
+          banner.style.borderColor = "var(--saffron)";
+          banner.style.background = "rgba(245, 158, 11, 0.1)";
+          icon.style.borderColor = "var(--saffron)";
+          icon.style.color = "var(--saffron)";
+          icon.innerHTML = '<i class="fa-solid fa-user-xmark"></i>';
+          title.textContent = "Identity Not Found in Voter Roll";
+          title.style.color = "var(--saffron)";
+          desc.textContent = "Iris template does not match any enrolled voter for this constituency. Referred to officer desk.";
+          livenessScore.textContent = "98.6% (Human Tissue Confirmed)";
+          livenessScore.style.color = "var(--green)";
+          livenessBar.style.width = "98%";
+          livenessBar.style.background = "var(--green)";
+          livenessHud.textContent = "98.6% (HUMAN)";
+          drawQRCode(false);
+          return;
+        }
+
+        // SUCCESSFUL VERIFIED MATCH
+        badge.className = "status-tag status-pass";
+        badge.textContent = "VERIFIED MATCH: AUTHORIZED";
+        banner.style.borderColor = "var(--green)";
+        banner.style.background = "rgba(16, 185, 129, 0.1)";
+        icon.style.borderColor = "var(--green)";
+        icon.style.color = "var(--green)";
+        icon.innerHTML = '<i class="fa-solid fa-check"></i>';
+        title.textContent = `Identity Confirmed: ${voter.name}`;
+        title.style.color = "var(--green)";
+        desc.textContent = `Aadhaar & Electoral match score: ${voter.score}. One-time EVM token issued.`;
+        livenessScore.textContent = "99.1% (Genuine Human Tissue)";
+        livenessScore.style.color = "var(--green)";
+        livenessBar.style.width = "99%";
+        livenessBar.style.background = "var(--green)";
+        livenessHud.textContent = "99.1% (HUMAN)";
+
+        const token = `PASS-${Math.floor(1000 + Math.random() * 9000)}-0x${Math.random().toString(16).substring(2, 8)}`;
+        document.getElementById('qrTokenText').textContent = `TOKEN: ${token}`;
+        drawQRCode(true);
+
+      }, 1400);
+    }
+
+    // Draw dynamic QR Code on canvas
+    function drawQRCode(valid = true) {
+      const canvas = document.getElementById('qrCanvas');
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, 90, 90);
+
+      ctx.fillStyle = valid ? "#040914" : "#ef4444";
+      // Render simulated QR modules pattern
+      const size = 6;
+      for (let r = 0; r < 15; r++) {
+        for (let c = 0; c < 15; c++) {
+          // Corner finder squares
+          const inCorner = (r < 4 && c < 4) || (r < 4 && c > 10) || (r > 10 && c < 4);
+          if (inCorner) {
+            ctx.fillRect(c * size, r * size, size, size);
+          } else if (Math.random() > 0.5) {
+            ctx.fillRect(c * size, r * size, size, size);
+          }
+        }
+      }
+    }
+
+    function downloadTokenPass() {
+      const name = document.getElementById('dispVoterName').textContent;
+      const id = document.getElementById('dispVoterId').textContent;
+      const token = document.getElementById('qrTokenText').textContent;
+      const content = `========================================
+ELECTION COMMISSION OF INDIA
+BIOMETRIC ONE-TIME EVM UNLOCK PASS (MVP 1)
+========================================
+CITIZEN NAME: ${name}
+VOTER ID: ${id}
+POLLING BOOTH: 04 - Central Constituency
+SESSION ${token}
+TIMESTAMP: ${new Date().toISOString()}
+CRYPTOGRAPHIC SIGNATURE: SHA256-RSA-VALIDATED
+STATUS: AUTHORIZED FOR SINGLE EVM BALLOT CAST
+VALIDITY: 180 SECONDS
+========================================`;
+
+      const blob = new Blob([content], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `Nayan_Vote_EVM_Pass_${name}.txt`;
+      a.click();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      drawHUD();
+      drawQRCode(true);
+      updateSelectedVoter();
+    });
+  </script>
+</body>
+</html>

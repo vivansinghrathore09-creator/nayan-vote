@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nayan Vote • MVP 3: Decentralized Audit & Digital VVPAT Platform</title>
+  <meta name="description" content="MVP 3: Trustless cryptographic audit platform, Zero-Knowledge Proof (ZKP) ballot anonymization, verifiable digital VVPAT receipts, and live ledger explorer.">
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --bg-primary: #070c18;
+      --bg-secondary: #0b132b;
+      --bg-card: #0f172a;
+      --bg-card-hover: #1e293b;
+      --border-color: #334155;
+      --cyan: #00f2fe;
+      --blue: #2563eb;
+      --green: #10b981;
+      --red: #ef4444;
+      --saffron: #f59e0b;
+      --purple: #a855f7;
+      --text-white: #ffffff;
+      --text-light: #e2e8f0;
+      --text-muted: #94a3b8;
+      --font-display: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-light);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Universal Hub Header */
+    .hub-header {
+      background: rgba(11, 19, 43, 0.95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #fff;
+    }
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      color: #040914;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+    }
+    .brand-text h1 {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+    .brand-text span {
+      font-size: 0.72rem;
+      color: var(--purple);
+      font-family: var(--font-mono);
+      display: block;
+    }
+    .mvp-nav-links {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .mvp-nav-btn {
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-family: var(--font-display);
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--text-muted);
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .mvp-nav-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
+    .mvp-nav-btn.active { background: rgba(168, 85, 247, 0.15); border-color: var(--purple); color: #c084fc; }
+    .mvp-nav-btn.btn-kiosk { background: linear-gradient(135deg, var(--cyan), var(--blue)); color: #040914; font-weight: 700; }
+
+    /* Container */
+    .container {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 30px 24px 60px 24px;
+    }
+
+    /* Hero Strip */
+    .hero-strip {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(11, 19, 43, 0.9));
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px 30px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(168, 85, 247, 0.1);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      color: #c084fc;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      padding: 4px 10px;
+      border-radius: 9999px;
+      margin-bottom: 8px;
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .hero-desc { color: var(--text-muted); font-size: 0.95rem; max-width: 820px; }
+    .hero-stats { display: flex; gap: 20px; flex-shrink: 0; }
+    .stat-pill {
+      background: rgba(7, 12, 24, 0.8);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px 18px;
+      text-align: center;
+    }
+    .stat-val { font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; color: #c084fc; }
+    .stat-lbl { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* Main Grid */
+    .ledger-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 24px;
+      margin-bottom: 30px;
+    }
+
+    /* Left Card: ZKP & Digital VVPAT Generator */
+    .zkp-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ZKP Flowchart Simulation */
+    .zkp-stage-box {
+      background: rgba(11, 19, 43, 0.7);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .zkp-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.85rem;
+    }
+    .step-tag {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(168, 85, 247, 0.2);
+      border: 1px solid var(--purple);
+      color: #c084fc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .step-content strong { color: #fff; display: block; font-family: var(--font-mono); }
+    .step-content span { color: var(--text-muted); font-size: 0.78rem; }
+
+    /* Interactive Inputs */
+    .cast-vote-box {
+      background: rgba(7, 12, 24, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .field-group label {
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      display: block;
+    }
+    .styled-input, .styled-select {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+      color: #fff;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      outline: none;
+    }
+    .styled-input:focus, .styled-select:focus { border-color: var(--purple); }
+
+    .btn-cast-ledger {
+      background: linear-gradient(135deg, var(--purple), var(--blue));
+      color: #fff;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.35);
+      transition: all 0.2s ease;
+    }
+    .btn-cast-ledger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 28px rgba(168, 85, 247, 0.55);
+    }
+
+    /* Thermal Digital VVPAT Slip */
+    .vvpat-slip-container {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 22px;
+      color: #0f172a;
+      font-family: var(--font-mono);
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border-top: 6px solid #e2e8f0;
+      border-bottom: 6px dashed #cbd5e1;
+    }
+    .vvpat-header {
+      text-align: center;
+      border-bottom: 1px dashed #94a3b8;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+    .vvpat-header h3 { font-size: 0.95rem; font-weight: 800; }
+    .vvpat-header p { font-size: 0.72rem; color: #475569; }
+
+    .vvpat-body {
+      font-size: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .vvpat-row {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dotted #e2e8f0;
+      padding-bottom: 4px;
+    }
+    .vvpat-row strong { color: #040914; }
+    .hash-highlight {
+      background: #e2e8f0;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      word-break: break-all;
+    }
+
+    .vvpat-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .btn-sm-action {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid var(--border-color);
+      background: rgba(30, 41, 59, 0.8);
+      color: #fff;
+    }
+    .btn-sm-action:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    /* Right Card: Public Verification Portal */
+    .verify-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+    }
+    .search-input {
+      flex: 1;
+      background: #040914;
+      border: 1px solid var(--border-color);
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+    }
+    .search-input:focus { border-color: var(--cyan); }
+    .btn-verify {
+      background: var(--cyan);
+      color: #040914;
+      font-weight: 800;
+      font-family: var(--font-display);
+      border: none;
+      border-radius: 8px;
+      padding: 0 20px;
+      cursor: pointer;
+    }
+
+    /* Merkle Proof Result */
+    .proof-result-panel {
+      background: rgba(11, 19, 43, 0.8);
+      border: 1px solid var(--green);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .proof-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--green);
+      background: rgba(16, 185, 129, 0.12);
+      padding: 4px 10px;
+      border-radius: 6px;
+      width: fit-content;
+    }
+    .proof-tree-diagram {
+      background: #040914;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 14px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      line-height: 1.6;
+    }
+
+    /* Live Block Stream */
+    .block-stream-box {
+      background: rgba(7, 12, 24, 0.8);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 14px;
+    }
+    .stream-header {
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .block-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+    }
+    .block-item:last-child { border-bottom: none; }
+    .block-num { color: #c084fc; font-weight: 700; }
+    .block-hash { color: var(--text-muted); }
+    .block-txs { color: var(--green); }
+
+    @media (max-width: 1024px) {
+      .ledger-grid { grid-template-columns: 1fr; }
+      .hero-strip { flex-direction: column; align-items: flex-start; }
+      .input-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Universal Hub Header -->
+  <header class="hub-header">
+    <a href="index.html" class="brand-group">
+      <div class="brand-icon">
+        <i class="fa-solid fa-receipt"></i>
+      </div>
+      <div class="brand-text">
+        <h1>NAYAN VOTE • MVP 3</h1>
+        <span>Decentralized Audit & Digital VVPAT Platform</span>
+      </div>
+    </a>
+
+    <nav class="mvp-nav-links">
+      <a href="mvp-1-verification.html" class="mvp-nav-btn">
+        <i class="fa-solid fa-shield-halved"></i> MVP 1: Verification
+      </a>
+      <a href="mvp-2-voice-kiosk.html" class="mvp-nav-btn">
+        <i class="fa-solid fa-microphone"></i> MVP 2: Voice Assist
+      </a>
+      <a href="mvp-3-audit-vvpat.html" class="mvp-nav-btn active">
+        <i class="fa-solid fa-receipt"></i> MVP 3: Audit & VVPAT
+      </a>
+      <a href="case-study-nayan-vote.html" class="mvp-nav-btn">
+        <i class="fa-solid fa-book-open"></i> Case Study
+      </a>
+      <a href="index.html" class="mvp-nav-btn btn-kiosk">
+        <i class="fa-solid fa-play"></i> Full Kiosk
+      </a>
+    </nav>
+  </header>
+
+  <div class="container">
+
+    <!-- Hero Strip -->
+    <div class="hero-strip">
+      <div>
+        <div class="hero-badge">
+          <i class="fa-solid fa-cubes"></i>
+          <span>IMMUTABLE TRUST ARCHITECTURE • ZERO HARDWARE DEPENDENCY</span>
+        </div>
+        <h2 class="hero-title">Zero-Knowledge Ballot Anonymization & Public Ledger</h2>
+        <p class="hero-desc">
+          Proves that every vote was <em>"Cast as Intended"</em> and <em>"Counted as Cast"</em> without revealing voter choice. Emits cryptographic digital VVPAT receipts verified on an immutable Merkle tree ledger.
+        </p>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-pill">
+          <div class="stat-val">100%</div>
+          <div class="stat-lbl">Audit Integrity</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-val">&lt; 0.5s</div>
+          <div class="stat-lbl">Proof Latency</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="ledger-grid">
+
+      <!-- Left Column: ZKP Simulator & Digital VVPAT Generator -->
+      <div class="zkp-card">
+        <div class="card-head">
+          <div class="card-title">
+            <i class="fa-solid fa-shield-halved" style="color: var(--purple);"></i>
+            <span>ZKP Vote Anonymizer & Ledger Commit</span>
+          </div>
+          <span style="font-size: 0.75rem; color: var(--green); font-family: var(--font-mono);"><i class="fa-solid fa-circle-check"></i> Merkle Tree Active</span>
+        </div>
+
+        <!-- ZKP 3-Stage Pipeline -->
+        <div class="zkp-stage-box">
+          <div class="zkp-step">
+            <div class="step-tag">1</div>
+            <div class="step-content">
+              <strong>Citizen Verification & Blind Salt</strong>
+              <span>Voter biometric generates blinding factor <code>0x4f9a...3c</code>. Biometrics wiped immediately.</span>
+            </div>
+          </div>
+          <div class="zkp-step">
+            <div class="step-tag">2</div>
+            <div class="step-content">
+              <strong>Zero-Knowledge Commitment</strong>
+              <span>Computes <code>Commitment = SHA256(Candidate_ID + Salt)</code>. Decouples identity from vote.</span>
+            </div>
+          </div>
+          <div class="zkp-step">
+            <div class="step-tag">3</div>
+            <div class="step-content">
+              <strong>Immutable Block Commit</strong>
+              <span>Payload signed by booth private key and sealed into cryptographic ledger block.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Vote Commit Form -->
+        <div class="cast-vote-box">
+          <div class="input-row">
+            <div class="field-group">
+              <label for="inputVoterId">Simulated Voter ID:</label>
+              <input type="text" id="inputVoterId" class="styled-input" value="IND-2026-VIVAN-8849" readonly>
+            </div>
+            <div class="field-group">
+              <label for="inputCandidate">Choose Candidate Ballot:</label>
+              <select id="inputCandidate" class="styled-select">
+                <option value="CAND-01: Arun Mehta">01: Arun Mehta (Democratic)</option>
+                <option value="CAND-02: Priya Nair" selected>02: Priya Nair (Progressive)</option>
+                <option value="CAND-03: Rajesh Sen">03: Rajesh Sen (Civic Justice)</option>
+                <option value="CAND-04: NOTA">04: NOTA (None of Above)</option>
+              </select>
+            </div>
+          </div>
+
+          <button class="btn-cast-ledger" onclick="castCryptographicVote()">
+            <i class="fa-solid fa-cube"></i> Cast Ballot & Mint Digital VVPAT 2.0 Receipt
+          </button>
+        </div>
+
+        <!-- Thermal Digital VVPAT Receipt -->
+        <div class="vvpat-slip-container" id="vvpatSlip">
+          <div class="vvpat-header">
+            <h3>ELECTION COMMISSION OF INDIA</h3>
+            <p>DIGITAL VVPAT 2.0 CRYPTOGRAPHIC AUDIT RECORD</p>
+          </div>
+          <div class="vvpat-body">
+            <div class="vvpat-row">
+              <span>TX REFERENCE:</span>
+              <strong id="receiptTxRef">VOT-88492026</strong>
+            </div>
+            <div class="vvpat-row">
+              <span>BALLOT COMMITMENT:</span>
+              <strong id="receiptCandidate">02: PRIYA NAIR</strong>
+            </div>
+            <div class="vvpat-row">
+              <span>BOOTH ID:</span>
+              <strong>04-CENTRAL-PARLIAMENTARY</strong>
+            </div>
+            <div class="vvpat-row">
+              <span>LEDGER BLOCK:</span>
+              <strong id="receiptBlock">BLOCK #10,482 (CONFIRMED)</strong>
+            </div>
+            <div class="vvpat-row">
+              <span>ZKP TX HASH:</span>
+              <span class="hash-highlight" id="receiptTxHash">0x8f2c7a4e19b03d2ef910a82b4c6e9d7a5b3c1f8e</span>
+            </div>
+            <div class="vvpat-row">
+              <span>TIMESTAMP:</span>
+              <span id="receiptTime">2026-09-28T07:15:30Z</span>
+            </div>
+          </div>
+
+          <div style="font-size: 0.7rem; color: #64748b; text-align: center;">
+            ✓ Vote Cast as Intended • 🔒 Identity Anonymized • Keep TX Ref for Public Audit
+          </div>
+
+          <div class="vvpat-actions">
+            <button class="btn-sm-action" onclick="printVVPATSlip()">
+              <i class="fa-solid fa-print"></i> Print Receipt
+            </button>
+            <button class="btn-sm-action" onclick="downloadJSONAudit()">
+              <i class="fa-solid fa-download"></i> Download Audit JSON
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Public Verification Portal & Live Ledger Explorer -->
+      <div class="verify-card">
+        <div class="card-head">
+          <div class="card-title">
+            <i class="fa-solid fa-magnifying-glass" style="color: var(--cyan);"></i>
+            <span>Public Vote Verification Portal</span>
+          </div>
+          <span style="font-size: 0.75rem; color: var(--cyan); font-family: var(--font-mono);">Citizen Audit Tool</span>
+        </div>
+
+        <p style="font-size: 0.88rem; color: var(--text-muted);">
+          Every citizen or international observer can paste their TX Reference code below to inspect the cryptographic Merkle path and verify inclusion in the central count.
+        </p>
+
+        <!-- Search Bar -->
+        <div class="search-box">
+          <input type="text" id="searchTxRef" class="search-input" value="VOT-88492026" placeholder="Enter TX Reference (e.g. VOT-88492026)">
+          <button class="btn-verify" onclick="verifyVoteOnLedger()">
+            <i class="fa-solid fa-search"></i> Verify
+          </button>
+        </div>
+
+        <!-- Verification Proof Panel -->
+        <div class="proof-result-panel" id="proofPanel">
+          <div class="proof-badge">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>VOTE TALLIED & CRYPTOGRAPHICALLY SECURED</span>
+          </div>
+          <div style="font-size: 0.95rem; color: #fff;">
+            TX Reference <code id="verifiedRef" style="color: var(--cyan); font-weight: 700;">VOT-88492026</code> is validated in <strong>Block #10,482</strong>.
+          </div>
+
+          <div class="proof-tree-diagram">
+            <div style="color: var(--purple); font-weight: 700; margin-bottom: 4px;">MERKLE INCLUSION PROOF:</div>
+            <div>├─ Leaf Hash (Vote): <span style="color: #6ee7b7;" id="merkleLeaf">0x8f2c...4e19</span></div>
+            <div>├─ Sibling Hash: <span>0x3e1a...99b2</span></div>
+            <div>├─ Branch Root: <span>0x91d4...21a8</span></div>
+            <div>└─ State Merkle Root: <strong style="color: var(--cyan);">0xfa77...b049 (SEALED)</strong></div>
+          </div>
+
+          <div style="font-size: 0.78rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+            <span>Consensus: BFT-Raft Offline Node</span>
+            <span>Audit Status: 100% Tamper-Proof</span>
+          </div>
+        </div>
+
+        <!-- Live Block Stream -->
+        <div class="block-stream-box">
+          <div class="stream-header">
+            <span><i class="fa-solid fa-satellite-dish" style="color: var(--cyan);"></i> Real-Time Ledger Stream</span>
+            <span style="color: var(--green);">● Live Blocks</span>
+          </div>
+
+          <div id="blockStreamContainer">
+            <div class="block-item">
+              <span class="block-num">#10,482</span>
+              <span class="block-hash">Hash: 0xfa77...b049</span>
+              <span class="block-txs">32 Ballots</span>
+            </div>
+            <div class="block-item">
+              <span class="block-num">#10,481</span>
+              <span class="block-hash">Hash: 0x90bd...18ac</span>
+              <span class="block-txs">28 Ballots</span>
+            </div>
+            <div class="block-item">
+              <span class="block-num">#10,480</span>
+              <span class="block-hash">Hash: 0x11fa...c78e</span>
+              <span class="block-txs">45 Ballots</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    let currentBlock = 10482;
+    let latestTx = {
+      ref: "VOT-88492026",
+      candidate: "02: PRIYA NAIR",
+      hash: "0x8f2c7a4e19b03d2ef910a82b4c6e9d7a5b3c1f8e",
+      block: 10482,
+      time: new Date().toISOString()
+    };
+
+    function castCryptographicVote() {
+      const cand = document.getElementById('inputCandidate').value;
+      currentBlock++;
+
+      const randomHash = "0x" + Array.from({length: 40}, () => Math.floor(Math.random() * 16).toString(16)).join('');
+      const randomRef = "VOT-" + Math.floor(10000000 + Math.random() * 90000000);
+      const timestamp = new Date().toISOString();
+
+      latestTx = {
+        ref: randomRef,
+        candidate: cand,
+        hash: randomHash,
+        block: currentBlock,
+        time: timestamp
+      };
+
+      // Update VVPAT slip
+      document.getElementById('receiptTxRef').textContent = randomRef;
+      document.getElementById('receiptCandidate').textContent = cand;
+      document.getElementById('receiptBlock').textContent = `BLOCK #${currentBlock.toLocaleString()} (CONFIRMED)`;
+      document.getElementById('receiptTxHash').textContent = randomHash;
+      document.getElementById('receiptTime').textContent = timestamp;
+
+      // Update Search field
+      document.getElementById('searchTxRef').value = randomRef;
+
+      // Prepend to Block Stream
+      const stream = document.getElementById('blockStreamContainer');
+      const newBlock = document.createElement('div');
+      newBlock.className = 'block-item';
+      newBlock.innerHTML = `
+        <span class="block-num">#${currentBlock.toLocaleString()}</span>
+        <span class="block-hash">Hash: ${randomHash.substring(0, 10)}...</span>
+        <span class="block-txs">1 New Ballot</span>
+      `;
+      stream.insertBefore(newBlock, stream.firstChild);
+
+      // Trigger verification
+      verifyVoteOnLedger();
+    }
+
+    function verifyVoteOnLedger() {
+      const ref = document.getElementById('searchTxRef').value.trim();
+      const panel = document.getElementById('proofPanel');
+
+      if (!ref) {
+        alert("Please enter a valid TX Reference code.");
+        return;
+      }
+
+      document.getElementById('verifiedRef').textContent = ref;
+      document.getElementById('merkleLeaf').textContent = latestTx.hash.substring(0, 10) + "..." + latestTx.hash.substring(34);
+
+      panel.style.display = 'flex';
+      panel.style.animation = 'none';
+      panel.offsetHeight; /* trigger reflow */
+      panel.style.animation = 'fadeIn 0.4s ease';
+    }
+
+    function printVVPATSlip() {
+      window.print();
+    }
+
+    function downloadJSONAudit() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(latestTx, null, 2));
+      const a = document.createElement('a');
+      a.setAttribute("href", dataStr);
+      a.setAttribute("download", `VVPAT_Audit_Receipt_${latestTx.ref}.json`);
+      a.click();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('receiptTime').textContent = new Date().toISOString();
+    });
+  </script>
+</body>
+</html>
