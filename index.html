@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nayan Vote — Biometric Iris-Scan Accessible Voting Kiosk</title>
+  <meta name="description" content="Nayan Vote: India's Touchless Biometric Iris-Scanning E-Voting Kiosk for Secure, Accessible, and Fraud-Proof Elections.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- KIOSK WRAPPER -->
+  <div class="kiosk-viewport">
+
+    <!-- DEV & SIMULATION TOOLBAR -->
+    <div class="dev-toolbar">
+      <div class="dev-left">
+        <span class="dev-badge"><i class="fa-solid fa-microchip"></i> BIOMETRIC TEST BENCH</span>
+        <label for="devVerificationMode" style="color: var(--text-secondary); font-size: 0.8rem;">Voter Mode:</label>
+        <select id="devVerificationMode" class="dev-select">
+          <option value="auto" selected>Enrolled Voter: Vivan (Verified Match)</option>
+          <option value="force-mismatch">Impersonator / Unknown (Mismatch & Retry Test)</option>
+          <option value="force-match">Forced Instant Pass (99.8%)</option>
+        </select>
+        <button id="devCalibrateVivan" class="dev-btn" title="Save current live eye capture as Vivan's template">
+          <i class="fa-solid fa-id-card"></i> Calibrate / Re-enroll As Vivan
+        </button>
+      </div>
+
+      <div class="dev-right">
+        <label for="devScreenJump" style="color: var(--text-secondary); font-size: 0.8rem;">Jump Screen:</label>
+        <select id="devScreenJump" class="dev-select">
+          <option value="screen-welcome">Screen 1: Welcome & Language</option>
+          <option value="screen-scan">Screen 2: Iris Scan Prompt</option>
+          <option value="screen-verified">Screen 3: Identity Verification</option>
+          <option value="screen-method">Screen 4: Voting Method</option>
+          <option value="screen-touch-ballot">Screen 5A: Touch Ballot</option>
+          <option value="screen-voice-ballot">Screen 5B: Voice Ballot</option>
+          <option value="screen-result">Screen 6: Vote Result & Receipt</option>
+        </select>
+        <a href="case-study-nayan-vote.html" class="dev-btn" style="text-decoration: none; color: var(--cyan); border-color: rgba(0, 242, 254, 0.4); display: inline-flex; align-items: center; gap: 6px;" title="View 6D UX Case Study">
+          <i class="fa-solid fa-book-open"></i> View Case Study
+        </a>
+      </div>
+    </div>
+
+    <!-- KIOSK MASTER HEADER -->
+    <header class="kiosk-header">
+      <div class="brand-section">
+        <div class="brand-logo-icon">
+          <i class="fa-solid fa-eye"></i>
+        </div>
+        <div class="brand-text">
+          <h1>NAYAN VOTE <span class="brand-tag">नयन वोट</span></h1>
+          <p>Election Commission of India • Touchless Biometric E-Kiosk</p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <!-- Live Polling Clock -->
+        <div class="kiosk-clock">
+          <span class="clock-live-dot"></span>
+          <span id="kioskClockTime">12:00:00 PM</span>
+        </div>
+
+        <!-- High Contrast Accessibility Toggle -->
+        <button id="btnToggleContrast" class="icon-control-btn" title="Toggle High Contrast Mode">
+          <i class="fa-solid fa-circle-half-stroke"></i>
+          <span>Contrast</span>
+        </button>
+
+        <!-- Font Scale Toggle -->
+        <button id="btnScaleText" class="icon-control-btn" title="Increase Text Size for Readability">
+          <i class="fa-solid fa-text-height"></i>
+          <span>Text Size</span>
+        </button>
+
+        <!-- Voice / Mute Toggle -->
+        <button id="btnToggleAudio" class="icon-control-btn" title="Toggle Voice Prompts">
+          <i class="fa-solid fa-volume-high"></i>
+          <span>Voice On</span>
+        </button>
+
+        <!-- Emergency Officer Help Button -->
+        <button id="btnOfficerSOS" class="icon-control-btn btn-sos" title="Call Polling Officer for Help">
+          <i class="fa-solid fa-bell"></i>
+          <span>Officer Help</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- KIOSK SCREENS CONTAINER -->
+    <main class="kiosk-body">
+
+      <!-- ====================================================================
+           SCREEN 1: WELCOME & LANGUAGE SELECTION
+           ==================================================================== -->
+      <section id="screen-welcome" class="kiosk-screen active">
+        <div class="screen-header-banner">
+          <span class="screen-badge"><i class="fa-solid fa-fingerprint"></i> Step 1 of 4 • Welcome</span>
+          <h2 id="tWelcomeTitle" class="screen-title">Welcome to Nayan Vote</h2>
+          <p id="tWelcomeSubtitle" class="screen-subtitle">Please select your preferred language to begin touchless biometric voting.</p>
+        </div>
+
+        <div class="welcome-hero-card">
+          <div style="font-size: 2.5rem; margin-bottom: 8px;">🇮🇳</div>
+          <h3 style="font-size: 1.4rem; margin-bottom: 6px;">Democracy Through Technology & Trust</h3>
+          <p style="color: var(--text-secondary); max-width: 650px; margin: 0 auto 12px auto;">
+            Secure iris authentication eliminates fake votes, replaces physical ID slips, and enables complete touchless accessibility.
+          </p>
+
+          <button id="audioInstructionBtn" class="audio-instruction-bar">
+            <i class="fa-solid fa-volume-high"></i>
+            <span id="tAudioInstruction">Tap for Audio Instructions (English / हिन्दी)</span>
+          </button>
+        </div>
+
+        <!-- Language Selection Grid -->
+        <div class="languages-grid">
+          <button class="language-btn-card selected" data-lang="en-US">
+            <div>
+              <span class="lang-native">English</span>
+              <span class="lang-latin">Default International</span>
+            </div>
+            <i class="fa-solid fa-globe lang-icon"></i>
+          </button>
+
+          <button class="language-btn-card" data-lang="hi-IN">
+            <div>
+              <span class="lang-native">हिन्दी</span>
+              <span class="lang-latin">Hindi</span>
+            </div>
+            <i class="fa-solid fa-language lang-icon"></i>
+          </button>
+
+          <button class="language-btn-card" data-lang="ta-IN">
+            <div>
+              <span class="lang-native">தமிழ்</span>
+              <span class="lang-latin">Tamil</span>
+            </div>
+            <i class="fa-solid fa-language lang-icon"></i>
+          </button>
+
+          <button class="language-btn-card" data-lang="te-IN">
+            <div>
+              <span class="lang-native">తెలుగు</span>
+              <span class="lang-latin">Telugu</span>
+            </div>
+            <i class="fa-solid fa-language lang-icon"></i>
+          </button>
+
+          <button class="language-btn-card" data-lang="bn-IN">
+            <div>
+              <span class="lang-native">বাংলা</span>
+              <span class="lang-latin">Bengali</span>
+            </div>
+            <i class="fa-solid fa-language lang-icon"></i>
+          </button>
+
+          <button class="language-btn-card" data-lang="mr-IN">
+            <div>
+              <span class="lang-native">मराठी</span>
+              <span class="lang-latin">Marathi</span>
+            </div>
+            <i class="fa-solid fa-language lang-icon"></i>
+          </button>
+        </div>
+
+        <div class="kiosk-action-footer">
+          <button id="btnProceedToScan" class="btn-kiosk btn-kiosk-primary" style="min-width: 320px;">
+            <span>Proceed to Iris Scan</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SCREEN 2: IRIS SCAN PROMPT & LIVE SCANNER
+           ==================================================================== -->
+      <section id="screen-scan" class="kiosk-screen">
+        <div class="screen-header-banner">
+          <span class="screen-badge"><i class="fa-solid fa-camera"></i> Step 2 of 4 • Biometric Authentication</span>
+          <h2 id="tScreen2Title" class="screen-title">Please Position Your Eyes at the Scanner</h2>
+          <p id="tScreen2Subtitle" class="screen-subtitle">Hold steady while the optical infrared sensor locks onto your iris contours.</p>
+        </div>
+
+        <div class="iris-scanner-layout">
+          <!-- LIVE WEBCAM & RETICLE HUD -->
+          <div class="scanner-viewport-wrapper">
+            <video id="webcamVideo" autoplay playsinline muted></video>
+            <canvas id="scannerCanvas" width="960" height="600"></canvas>
+          </div>
+
+          <!-- GUIDANCE & PROGRESS PANEL -->
+          <div class="scan-guidance-panel">
+            <div class="guidance-step-item">
+              <div class="step-num-bubble">1</div>
+              <div class="step-info">
+                <h3>Align Your Eyes</h3>
+                <p id="tPositionInstruction">Look straight into the high-precision circular reticle. Keep eyes naturally open.</p>
+              </div>
+            </div>
+
+            <div class="guidance-step-item">
+              <div class="step-num-bubble">2</div>
+              <div class="step-info">
+                <h3>Optimal Distance</h3>
+                <p>Stay positioned around 25–35 cm (arm's length) from the screen.</p>
+              </div>
+            </div>
+
+            <div class="guidance-step-item">
+              <div class="step-num-bubble">3</div>
+              <div class="step-info">
+                <h3>Liveness & Crypts Check</h3>
+                <p>System automatically verifies natural micro-movements and matches your unique 1,024-bit iris code.</p>
+              </div>
+            </div>
+
+            <!-- Real-time Progress & Retries -->
+            <div class="scan-progress-box">
+              <div class="progress-label-row">
+                <span id="scanStatusLiveText">Scanning Biometric Receptors...</span>
+                <span id="scanProgressPercent">0%</span>
+              </div>
+              <div class="progress-track">
+                <div id="scanProgressBar" class="progress-fill"></div>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px;">
+                <div class="attempts-badge">
+                  <i class="fa-solid fa-clock-rotate-left"></i>
+                  <span id="attemptsRemainingText">2 tries left</span>
+                </div>
+                <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                  <i class="fa-solid fa-shield-halved"></i> AES-256 Protected
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Controls -->
+            <div class="scan-action-buttons">
+              <button id="btnTriggerScan" class="btn-kiosk btn-kiosk-primary" style="flex: 1;">
+                <i class="fa-solid fa-play"></i>
+                <span id="btnTriggerScanText">Start Iris Scan</span>
+              </button>
+              <button id="btnRetryScan" class="btn-kiosk btn-kiosk-secondary" style="display: none; flex: 1;">
+                <i class="fa-solid fa-rotate-right"></i>
+                <span>Retry Scan</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SCREEN 3: IDENTITY VERIFIED OR NOT RESULT
+           ==================================================================== -->
+      <section id="screen-verified" class="kiosk-screen">
+        <div class="screen-header-banner">
+          <span class="screen-badge"><i class="fa-solid fa-shield-check"></i> Step 3 of 4 • Identity Verification</span>
+          <h2 class="screen-title">Biometric Verification Result</h2>
+        </div>
+
+        <div id="verificationResultCard" class="verification-result-card">
+          <!-- Status Icon -->
+          <div id="resultStatusIcon" class="result-status-icon">
+            <i class="fa-solid fa-check"></i>
+          </div>
+
+          <!-- Status Headings -->
+          <h3 id="resultStatusHeading" style="font-size: 2rem; margin-bottom: 8px;">Identity Confirmed (Vivan)</h3>
+          <p id="resultStatusMessage" style="color: var(--text-secondary); font-size: 1.15rem; max-width: 600px; margin: 0 auto;">
+            Identity confirmed. Proceed to voting.
+          </p>
+
+          <div style="margin: 16px 0;">
+            <span id="resultMatchScoreBadge" class="match-score-pill">98.9% Match (Verified)</span>
+          </div>
+
+          <!-- Voter Profile Card (Shown upon Verified Vivan) -->
+          <div id="voterProfilePreviewBox" class="voter-profile-preview">
+            <div class="voter-avatar-iris">
+              <!-- Stylized Iris Profile Badge -->
+              <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" stroke="#00f2fe" stroke-width="2" stroke-dasharray="4 4" />
+                <circle cx="50" cy="50" r="32" fill="#0369a1" />
+                <circle cx="50" cy="50" r="24" fill="#0891b2" />
+                <circle cx="50" cy="50" r="12" fill="#020617" />
+                <circle cx="44" cy="44" r="4" fill="#ffffff" opacity="0.9" />
+                <path d="M50 15 L50 25 M50 75 L50 85 M15 50 L25 50 M75 50 L85 50" stroke="#38bdf8" stroke-width="2" />
+              </svg>
+            </div>
+
+            <div class="voter-details-grid">
+              <div class="detail-item">
+                <div class="label">Voter Name</div>
+                <div class="value" id="voterCardName">VIVAN</div>
+              </div>
+
+              <div class="detail-item">
+                <div class="label">Electoral Voter ID</div>
+                <div class="value" id="voterCardId" style="font-family: var(--font-mono); color: var(--accent-cyan);">IND-2026-VIVAN-8849</div>
+              </div>
+
+              <div class="detail-item">
+                <div class="label">Registered Constituency</div>
+                <div class="value" id="voterCardConstituency">04 - Central District</div>
+              </div>
+
+              <div class="detail-item">
+                <div class="label">Biometric Verification Status</div>
+                <div class="value" style="color: var(--accent-green);"><i class="fa-solid fa-circle-check"></i> Aadhaar Iris Linked</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div style="display: flex; justify-content: center; gap: 16px; margin-top: 10px;">
+            <button id="btnProceedToVoting" class="btn-kiosk btn-kiosk-success" style="min-width: 280px;">
+              <span id="tProceedToVoteText">Proceed to Voting</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+
+            <button id="btnVerificationRetry" class="btn-kiosk btn-kiosk-secondary" style="display: none;">
+              <i class="fa-solid fa-rotate-right"></i>
+              <span>Retry Scan</span>
+            </button>
+
+            <button id="btnVerificationContactOfficer" class="btn-kiosk btn-kiosk-secondary" style="display: none;">
+              <i class="fa-solid fa-hand-holding-hand"></i>
+              <span>Call Polling Officer</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SCREEN 4: VOTING METHOD SELECTION (TOUCH VS VOICE)
+           ==================================================================== -->
+      <section id="screen-method" class="kiosk-screen">
+        <div class="screen-header-banner">
+          <span class="screen-badge"><i class="fa-solid fa-sliders"></i> Step 4 of 4 • Voting Method</span>
+          <h2 id="tChooseMethodTitle" class="screen-title">Would You Like to Vote Using Voice or Touch?</h2>
+          <p id="tChooseMethodSubtitle" class="screen-subtitle">Choose the method most comfortable for you. Voice voting is fully hands-free.</p>
+        </div>
+
+        <div class="voting-method-container">
+          <!-- TOUCH VOTING METHOD -->
+          <div id="btnSelectTouchMethod" class="method-card">
+            <div class="method-icon-wrap">
+              <i class="fa-solid fa-hand-pointer"></i>
+            </div>
+            <h3 id="tTouchVoting">Touch Voting</h3>
+            <p id="tTouchVotingDesc">
+              Direct tap on large accessible digital ballot cards with confirmation prompts.
+            </p>
+            <div style="margin-top: 24px;">
+              <span class="btn-kiosk btn-kiosk-primary" style="font-size: 1rem; padding: 10px 24px;">Select Touch</span>
+            </div>
+          </div>
+
+          <!-- VOICE VOTING METHOD -->
+          <div id="btnSelectVoiceMethod" class="method-card">
+            <div class="method-icon-wrap" style="border-color: var(--accent-green); color: var(--accent-green); background: rgba(16, 185, 129, 0.15);">
+              <i class="fa-solid fa-microphone-lines"></i>
+            </div>
+            <h3 id="tVoiceVoting">Voice Voting</h3>
+            <p id="tVoiceVotingDesc">
+              Vote hands-free using spoken commands and assistive speech confirmation.
+            </p>
+            <div style="margin-top: 24px;">
+              <span class="btn-kiosk btn-kiosk-success" style="font-size: 1rem; padding: 10px 24px;">Select Voice</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SCREEN 5A: TOUCH-BASED VOTE CAST
+           ==================================================================== -->
+      <section id="screen-touch-ballot" class="kiosk-screen">
+        <div class="screen-header-banner">
+          <span class="screen-badge"><i class="fa-solid fa-check-to-slot"></i> Official Electronic Ballot</span>
+          <h2 id="tBallotTitle" class="screen-title">Official Ballot Paper</h2>
+          <p id="tBallotSubtitle" class="screen-subtitle">Select one candidate from the list below to cast your ballot.</p>
+        </div>
+
+        <div class="ballot-container">
+          <div class="ballot-meta-bar">
+            <span><strong>CONSTITUENCY:</strong> 04 - Central District</span>
+            <span><strong>AUTHENTICATED VOTER:</strong> VIVAN</span>
+            <span><strong>EVM UNIT:</strong> KIOSK-03-VVPAT</span>
+          </div>
+
+          <!-- DYNAMIC CANDIDATES LIST -->
+          <div id="candidatesListContainer" class="candidates-list">
+            <!-- Candidate cards injected by app.js -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SCREEN 5B: VOICE-BASED VOTING INTERFACE
+           ==================================================================== -->
+      <section id="screen-voice-ballot" class="kiosk-screen">
+        <div class="screen-header-banner">
+          <span class="screen-badge"><i class="fa-solid fa-microphone"></i> Accessible Voice Ballot</span>
+          <h2 class="screen-title">Say the Candidate Number or Name</h2>
+          <p class="screen-subtitle" id="tVoicePromptInstruct">Say "Candidate 1", "Priya Nair", or "NOTA". Voice confirmation will verify your vote.</p>
+        </div>
+
+        <div class="voice-voting-stage">
+          <!-- Animated Pulsing Microphone -->
+          <div class="mic-pulsing-circle">
+            <i class="fa-solid fa-microphone"></i>
+          </div>
+
+          <!-- Dynamic Sound Wave Bars -->
+          <div class="audio-waveform-canvas">
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+          </div>
+
+          <!-- Real-time Speech Transcript Bubble -->
+          <div id="voiceLiveTranscript" class="transcript-bubble">
+            Listening... Please speak clearly.
+          </div>
+
+          <!-- Candidate Confirmation Prompt (Appears upon recognition) -->
+          <div id="voiceConfirmationPromptBox" style="display: none; background: var(--bg-surface-glass); border: 2px solid var(--accent-cyan); border-radius: var(--radius-lg); padding: 28px; width: 100%; max-width: 600px;">
+            <div style="font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 6px;">Voice Candidate Recognized:</div>
+            <h3 id="voiceMatchedCandidateDisplay" style="font-size: 1.6rem; color: var(--accent-cyan); margin-bottom: 12px;">Candidate #2: Priya Nair</h3>
+            <p style="font-size: 1.1rem; margin-bottom: 20px;">Say <strong>"Yes"</strong> to confirm or <strong>"No"</strong> to go back.</p>
+
+            <div style="display: flex; justify-content: center; gap: 16px;">
+              <button class="btn-kiosk btn-kiosk-success" onclick="window.kioskApp.confirmAndCastVote()">
+                <i class="fa-solid fa-check"></i>
+                <span>Yes, Confirm</span>
+              </button>
+              <button class="btn-kiosk btn-kiosk-secondary" onclick="window.kioskApp.startVoiceVotingSession()">
+                <i class="fa-solid fa-xmark"></i>
+                <span>No, Try Again</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Candidate Voice Reference Table with Party Badges -->
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 10px;">
+            <span style="font-size: 0.85rem; background: rgba(255,153,51,0.15); border: 1px solid var(--party-bjp); color: #fed7aa; padding: 6px 14px; border-radius: 20px;">#1 BJP — Lotus 🪷 (Rajesh Sharma)</span>
+            <span style="font-size: 0.85rem; background: rgba(2,132,199,0.15); border: 1px solid var(--party-congress); color: #bae6fd; padding: 6px 14px; border-radius: 20px;">#2 Congress — Hand ✋ (Priya Patel)</span>
+            <span style="font-size: 0.85rem; background: rgba(220,38,38,0.15); border: 1px solid var(--party-sapa-red); color: #fecdd3; padding: 6px 14px; border-radius: 20px;">#3 SAPA — Bicycle 🚲 (Akhilesh Yadav)</span>
+            <span style="font-size: 0.85rem; background: rgba(0,168,232,0.15); border: 1px solid var(--party-aap); color: #e0f2fe; padding: 6px 14px; border-radius: 20px;">#4 AAP — Broom 🧹 (Arvind Saxena)</span>
+            <span style="font-size: 0.85rem; background: rgba(29,78,216,0.15); border: 1px solid var(--party-bsp); color: #bfdbfe; padding: 6px 14px; border-radius: 20px;">#5 BSP — Elephant 🐘 (Km. Maya Kumari)</span>
+            <span style="font-size: 0.85rem; background: rgba(100,116,139,0.2); border: 1px solid var(--party-nota); color: #cbd5e1; padding: 6px 14px; border-radius: 20px;">#6 NOTA — Neutral 🚫</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SCREEN 6: VOTE SUBMISSION RESULT & CRYPTOGRAPHIC RECEIPT
+           ==================================================================== -->
+      <section id="screen-result" class="kiosk-screen">
+        <div class="screen-header-banner">
+          <span class="screen-badge" style="border-color: var(--accent-green); color: var(--accent-green);">
+            <i class="fa-solid fa-circle-check"></i> Vote Cast Successfully
+          </span>
+          <h2 class="screen-title">Vote Submission Result</h2>
+        </div>
+
+        <div class="submission-layout">
+          <!-- SUCCESS CONFIRMATION PANEL -->
+          <div class="submission-success-banner">
+            <div class="evm-indicator-light">
+              <i class="fa-solid fa-circle"></i> EVM RECORD STORED • 1,000Hz CONFIRMATION TONE
+            </div>
+
+            <div style="font-size: 58px; color: var(--accent-green); margin-bottom: 12px;">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+
+            <h3 style="font-size: 1.8rem; margin-bottom: 8px;">Your Vote Has Been Cast Successfully!</h3>
+            <p style="color: var(--text-secondary); font-size: 1.05rem; line-height: 1.5; margin-bottom: 24px;">
+              Your ballot is cryptographically recorded onto the decentralized audit ledger and tied to your verified biometric session.
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 14px; max-width: 320px; margin: 0 auto;">
+              <button id="btnPrintReceipt" class="btn-kiosk btn-kiosk-primary">
+                <i class="fa-solid fa-print"></i>
+                <span>Print Paper Receipt</span>
+              </button>
+
+              <button id="btnFinishKiosk" class="btn-kiosk btn-kiosk-secondary">
+                <i class="fa-solid fa-check"></i>
+                <span>Finish & Exit</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- PHYSICAL / DIGITAL THERMAL RECEIPT (VVPAT) -->
+          <div class="thermal-receipt-container" id="thermalReceipt">
+            <div class="receipt-header">
+              <div style="font-size: 18px; margin-bottom: 4px;">🏛️ ELECTION COMMISSION OF INDIA</div>
+              <h3>Voter Verifiable Paper Audit Trail (VVPAT)</h3>
+              <div style="font-size: 0.75rem; color: #4b5563;">SECURE BIOMETRIC RECEIPT • NAYAN VOTE</div>
+            </div>
+
+            <div class="receipt-body-row">
+              <span>TX REF:</span>
+              <strong id="receiptTxId">VOT-88492026</strong>
+            </div>
+
+            <div class="receipt-body-row">
+              <span>TIMESTAMP:</span>
+              <strong id="receiptTimestamp">04/09/2026, 12:00:00</strong>
+            </div>
+
+            <div class="receipt-divider"></div>
+
+            <div class="receipt-body-row">
+              <span>VERIFIED VOTER:</span>
+              <strong id="receiptVoterName">VIVAN</strong>
+            </div>
+
+            <div class="receipt-body-row">
+              <span>VOTER ID:</span>
+              <strong id="receiptVoterId">IND-XXXX-8849</strong>
+            </div>
+
+            <div class="receipt-body-row">
+              <span>CONSTITUENCY:</span>
+              <strong id="receiptConstituency">04 - Central District</strong>
+            </div>
+
+            <div class="receipt-divider"></div>
+
+            <div style="background: #e5e7eb; padding: 10px; border-radius: 4px; margin: 8px 0;">
+              <div style="font-size: 0.75rem; color: #4b5563; text-transform: uppercase;">Selected Candidate:</div>
+              <div style="font-size: 1.15rem; font-weight: bold; margin: 2px 0;" id="receiptCandidate">#1 — Rajesh K. Sharma</div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span id="receiptSymbol" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; background: #fff; border-radius: 6px; padding: 2px; border: 1px solid #cbd5e1;">
+                  <svg viewBox="0 0 100 100" class="party-logo-svg bjp-lotus" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M50 14 C43 28, 43 46, 50 62 C57 46, 57 28, 50 14 Z" fill="#FF9933" stroke="#B23B00" stroke-width="1.2"/>
+                    <path d="M48 24 C34 36, 30 50, 44 63 C40 50, 42 36, 48 24 Z" fill="#FF9933" stroke="#B23B00" stroke-width="1.2"/>
+                    <path d="M52 24 C66 36, 70 50, 56 63 C60 50, 58 36, 52 24 Z" fill="#FF9933" stroke="#B23B00" stroke-width="1.2"/>
+                    <path d="M38 34 C20 46, 18 60, 36 65 C28 54, 30 44, 38 34 Z" fill="#FF7700" stroke="#B23B00" stroke-width="1.2"/>
+                    <path d="M62 34 C80 46, 82 60, 64 65 C72 54, 70 44, 62 34 Z" fill="#FF7700" stroke="#B23B00" stroke-width="1.2"/>
+                    <path d="M28 66 C36 63, 44 63, 50 64 C56 63, 64 63, 72 66 C66 73, 58 74, 50 73 C42 74, 34 73, 28 66 Z" fill="#138808" stroke="#063E02" stroke-width="1.2"/>
+                    <path d="M50 73 L50 86" stroke="#138808" stroke-width="4.5" stroke-linecap="round"/>
+                  </svg>
+                </span>
+              </div>
+            </div>
+
+            <div class="receipt-divider"></div>
+
+            <div class="receipt-body-row">
+              <span>BLOCK HASH:</span>
+              <span id="receiptBlockHash" style="font-size: 0.75rem; font-family: monospace;">0x8f2c...4e19</span>
+            </div>
+
+            <!-- Authentic Barcode Representation -->
+            <div class="receipt-barcode">
+              <div class="barcode-line" style="width: 2px;"></div>
+              <div class="barcode-line" style="width: 4px;"></div>
+              <div class="barcode-line" style="width: 1px;"></div>
+              <div class="barcode-line" style="width: 5px;"></div>
+              <div class="barcode-line" style="width: 2px;"></div>
+              <div class="barcode-line" style="width: 3px;"></div>
+              <div class="barcode-line" style="width: 1px;"></div>
+              <div class="barcode-line" style="width: 4px;"></div>
+              <div class="barcode-line" style="width: 2px;"></div>
+              <div class="barcode-line" style="width: 6px;"></div>
+              <div class="barcode-line" style="width: 1px;"></div>
+              <div class="barcode-line" style="width: 3px;"></div>
+              <div class="barcode-line" style="width: 4px;"></div>
+              <div class="barcode-line" style="width: 2px;"></div>
+              <div class="barcode-line" style="width: 1px;"></div>
+              <div class="barcode-line" style="width: 5px;"></div>
+              <div class="barcode-line" style="width: 2px;"></div>
+            </div>
+
+            <div class="receipt-footer-msg">
+              This slip confirms your vote has been tallied in the tamper-proof ledger. Keep safe or deposit in booth drop-box.
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- TOUCH VOTING CONFIRMATION MODAL -->
+  <div id="voteConfirmModal" class="kiosk-modal-overlay">
+    <div class="confirmation-modal-card">
+      <div style="font-size: 48px; color: var(--accent-cyan); margin-bottom: 12px;">
+        <i class="fa-solid fa-circle-question"></i>
+      </div>
+
+      <h3 style="font-size: 1.8rem; margin-bottom: 6px;" id="modalConfirmationPrompt">Are you sure you want to vote for this candidate?</h3>
+      <p style="color: var(--text-secondary); margin-bottom: 24px;">Once confirmed, your vote cannot be changed.</p>
+
+      <div style="background: rgba(0,0,0,0.3); border: 1.5px solid var(--border-subtle); border-radius: var(--radius-md); padding: 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px;">
+        <div style="text-align: left;">
+          <h4 id="modalCandidateName" style="font-size: 1.4rem; color: #fff;">Candidate Name</h4>
+          <p id="modalCandidateParty" style="color: var(--text-secondary); font-size: 0.95rem;">Party Name</p>
+        </div>
+        <div id="modalCandidateSymbol" class="modal-symbol-box"></div>
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 18px;">
+        <button id="btnModalConfirmVote" class="btn-kiosk btn-kiosk-success" style="flex: 1;">
+          <i class="fa-solid fa-check"></i>
+          <span>Yes, Cast Vote</span>
+        </button>
+        <button id="btnModalCancelVote" class="btn-kiosk btn-kiosk-secondary" style="flex: 1;">
+          <i class="fa-solid fa-xmark"></i>
+          <span>No, Go Back</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="audio.js"></script>
+  <script src="biometrics.js"></script>
+  <script src="logos.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
